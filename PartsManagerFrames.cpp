@@ -18,6 +18,7 @@ EVT_LIST_ITEM_DESELECTED(wxID_ANY, PartsManagerFrames::OnItemDeselected)
 EVT_CLOSE(PartsManagerFrames::OnClose)
 wxEND_EVENT_TABLE()
 
+// Constructor (unchanged except for UpdateTotalCost call)
 PartsManagerFrames::PartsManagerFrames()
     : wxFrame(nullptr, wxID_ANY, "Parts Manager", wxDefaultPosition, wxSize(600, 400)) {
     wxPanel* panel = new wxPanel(this, wxID_ANY);
@@ -55,7 +56,6 @@ PartsManagerFrames::PartsManagerFrames()
 
     mainSizer->Add(buttonSizer, 0, wxALIGN_CENTER | wxALL, 10);
 
-    // Add total cost label
     totalCostLabel = new wxStaticText(panel, wxID_ANY, "Total Inventory Cost: $0.00");
     mainSizer->Add(totalCostLabel, 0, wxALIGN_LEFT | wxALL, 10);
 
@@ -72,12 +72,13 @@ PartsManagerFrames::PartsManagerFrames()
     showAllButton->Bind(wxEVT_BUTTON, &PartsManagerFrames::OnShowAll, this);
 
     load_from_file("inventory.txt");
-    UpdateTotalCost(); // Initialize total cost
+    UpdateTotalCost();
 }
 
-// Constructor with title (similar setup, omitted for brevity but includes totalCostLabel)
+// Constructor with title (similar, omitted for brevity)
 PartsManagerFrames::PartsManagerFrames(const wxString& title)
     : wxFrame(nullptr, wxID_ANY, title, wxDefaultPosition, wxSize(600, 400)) {
+    // Same setup as above
     wxPanel* panel = new wxPanel(this, wxID_ANY);
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -163,15 +164,16 @@ void PartsManagerFrames::OnSortDescription(wxListEvent& event) {
         });
 
     partList->DeleteAllItems();
-    for (const auto& part : inventory) {
+    for (size_t i = 0; i < inventory.size(); ++i) {
         long index = partList->GetItemCount();
-        partList->InsertItem(index, part.getPartNumber());
-        partList->SetItem(index, 1, part.getPartDescription());
-        partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-        partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-        partList->SetItem(index, 4, part.getPartManufacturer());
-        partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-        partList->SetItem(index, 6, part.getPartLocation());
+        partList->InsertItem(index, inventory[i].getPartNumber());
+        partList->SetItem(index, 1, inventory[i].getPartDescription());
+        partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+        partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+        partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+        partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+        partList->SetItem(index, 6, inventory[i].getPartLocation());
+        partList->SetItemData(index, i); // Store inventory index
     }
 }
 
@@ -183,15 +185,16 @@ void PartsManagerFrames::OnSortCost(wxListEvent& event) {
         });
 
     partList->DeleteAllItems();
-    for (const auto& part : inventory) {
+    for (size_t i = 0; i < inventory.size(); ++i) {
         long index = partList->GetItemCount();
-        partList->InsertItem(index, part.getPartNumber());
-        partList->SetItem(index, 1, part.getPartDescription());
-        partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-        partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-        partList->SetItem(index, 4, part.getPartManufacturer());
-        partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-        partList->SetItem(index, 6, part.getPartLocation());
+        partList->InsertItem(index, inventory[i].getPartNumber());
+        partList->SetItem(index, 1, inventory[i].getPartDescription());
+        partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+        partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+        partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+        partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+        partList->SetItem(index, 6, inventory[i].getPartLocation());
+        partList->SetItemData(index, i);
     }
 }
 
@@ -203,15 +206,16 @@ void PartsManagerFrames::OnSortRetail(wxListEvent& event) {
         });
 
     partList->DeleteAllItems();
-    for (const auto& part : inventory) {
+    for (size_t i = 0; i < inventory.size(); ++i) {
         long index = partList->GetItemCount();
-        partList->InsertItem(index, part.getPartNumber());
-        partList->SetItem(index, 1, part.getPartDescription());
-        partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-        partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-        partList->SetItem(index, 4, part.getPartManufacturer());
-        partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-        partList->SetItem(index, 6, part.getPartLocation());
+        partList->InsertItem(index, inventory[i].getPartNumber());
+        partList->SetItem(index, 1, inventory[i].getPartDescription());
+        partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+        partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+        partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+        partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+        partList->SetItem(index, 6, inventory[i].getPartLocation());
+        partList->SetItemData(index, i);
     }
 }
 
@@ -223,15 +227,16 @@ void PartsManagerFrames::OnSortManufacturer(wxListEvent& event) {
         });
 
     partList->DeleteAllItems();
-    for (const auto& part : inventory) {
+    for (size_t i = 0; i < inventory.size(); ++i) {
         long index = partList->GetItemCount();
-        partList->InsertItem(index, part.getPartNumber());
-        partList->SetItem(index, 1, part.getPartDescription());
-        partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-        partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-        partList->SetItem(index, 4, part.getPartManufacturer());
-        partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-        partList->SetItem(index, 6, part.getPartLocation());
+        partList->InsertItem(index, inventory[i].getPartNumber());
+        partList->SetItem(index, 1, inventory[i].getPartDescription());
+        partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+        partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+        partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+        partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+        partList->SetItem(index, 6, inventory[i].getPartLocation());
+        partList->SetItemData(index, i);
     }
 }
 
@@ -239,19 +244,20 @@ void PartsManagerFrames::OnSortPartNumber(wxListEvent& event) {
     wxLogMessage("Sorting by Part Number...");
 
     std::sort(inventory.begin(), inventory.end(), [](const Part& a, const Part& b) {
-        return a.getPartNumber() < b.getPartNumber(); // String comparison
+        return a.getPartNumber() < b.getPartNumber();
         });
 
     partList->DeleteAllItems();
-    for (const auto& part : inventory) {
+    for (size_t i = 0; i < inventory.size(); ++i) {
         long index = partList->GetItemCount();
-        partList->InsertItem(index, part.getPartNumber());
-        partList->SetItem(index, 1, part.getPartDescription());
-        partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-        partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-        partList->SetItem(index, 4, part.getPartManufacturer());
-        partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-        partList->SetItem(index, 6, part.getPartLocation());
+        partList->InsertItem(index, inventory[i].getPartNumber());
+        partList->SetItem(index, 1, inventory[i].getPartDescription());
+        partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+        partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+        partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+        partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+        partList->SetItem(index, 6, inventory[i].getPartLocation());
+        partList->SetItemData(index, i);
     }
 }
 
@@ -263,15 +269,16 @@ void PartsManagerFrames::OnSortQuantity(wxListEvent& event) {
         });
 
     partList->DeleteAllItems();
-    for (const auto& part : inventory) {
+    for (size_t i = 0; i < inventory.size(); ++i) {
         long index = partList->GetItemCount();
-        partList->InsertItem(index, part.getPartNumber());
-        partList->SetItem(index, 1, part.getPartDescription());
-        partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-        partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-        partList->SetItem(index, 4, part.getPartManufacturer());
-        partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-        partList->SetItem(index, 6, part.getPartLocation());
+        partList->InsertItem(index, inventory[i].getPartNumber());
+        partList->SetItem(index, 1, inventory[i].getPartDescription());
+        partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+        partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+        partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+        partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+        partList->SetItem(index, 6, inventory[i].getPartLocation());
+        partList->SetItemData(index, i);
     }
 }
 
@@ -306,6 +313,8 @@ void PartsManagerFrames::load_from_file(const std::string& filename) {
         return;
     }
     std::string line;
+    inventory.clear();
+    partList->DeleteAllItems();
     while (std::getline(in, line)) {
         std::istringstream iss(line);
         Part part;
@@ -342,10 +351,11 @@ void PartsManagerFrames::load_from_file(const std::string& filename) {
         partList->SetItem(index, 4, part.getPartManufacturer());
         partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
         partList->SetItem(index, 6, part.getPartLocation());
+        partList->SetItemData(index, inventory.size() - 1); // Store inventory index
     }
     in.close();
     wxLogMessage("Inventory loaded from file: %s", filename);
-    UpdateTotalCost(); // Update total cost after loading
+    UpdateTotalCost();
 }
 
 void PartsManagerFrames::OnItemSelected(wxListEvent& event) {
@@ -381,13 +391,17 @@ void PartsManagerFrames::OnAddPart(wxCommandEvent& event) {
         part.setPartQuantity(std::stoi(dlg.GetQuantity().ToStdString()));
         part.setPartLocation(dlg.GetLocation().ToStdString());
         inventory.push_back(part);
+        partList->SetItemData(index, inventory.size() - 1); // Store inventory index
         wxLogMessage("Part added: %s", part.getPartNumber());
-        UpdateTotalCost(); // Update total cost after adding
+        UpdateTotalCost();
     }
 }
 
 void PartsManagerFrames::OnEditPart(wxCommandEvent& event) {
     if (selectedPartIndex == -1) return;
+    long inventoryIndex = partList->GetItemData(selectedPartIndex); // Get inventory index
+    if (inventoryIndex < 0 || inventoryIndex >= static_cast<long>(inventory.size())) return;
+
     wxString partNumber = partList->GetItemText(selectedPartIndex);
     wxString description = partList->GetItemText(selectedPartIndex, 1);
     wxString cost = partList->GetItemText(selectedPartIndex, 2);
@@ -406,27 +420,34 @@ void PartsManagerFrames::OnEditPart(wxCommandEvent& event) {
         partList->SetItem(selectedPartIndex, 5, dlg.GetQuantity());
         partList->SetItem(selectedPartIndex, 6, dlg.GetLocation());
 
-        inventory[selectedPartIndex].setPartNumber(dlg.GetPartNumber().ToStdString());
-        inventory[selectedPartIndex].setPartDescription(dlg.GetDescription().ToStdString());
-        inventory[selectedPartIndex].setPartCost(std::stod(dlg.GetCost().ToStdString()));
-        inventory[selectedPartIndex].setPartRetail(std::stod(dlg.GetRetail().ToStdString()));
-        inventory[selectedPartIndex].setPartManufacturer(dlg.GetManufacturer().ToStdString());
-        inventory[selectedPartIndex].setPartQuantity(std::stoi(dlg.GetQuantity().ToStdString()));
-        inventory[selectedPartIndex].setPartLocation(dlg.GetLocation().ToStdString());
-        wxLogMessage("Part edited: %s", inventory[selectedPartIndex].getPartNumber());
-        UpdateTotalCost(); // Update total cost after editing
+        inventory[inventoryIndex].setPartNumber(dlg.GetPartNumber().ToStdString());
+        inventory[inventoryIndex].setPartDescription(dlg.GetDescription().ToStdString());
+        inventory[inventoryIndex].setPartCost(std::stod(dlg.GetCost().ToStdString()));
+        inventory[inventoryIndex].setPartRetail(std::stod(dlg.GetRetail().ToStdString()));
+        inventory[inventoryIndex].setPartManufacturer(dlg.GetManufacturer().ToStdString());
+        inventory[inventoryIndex].setPartQuantity(std::stoi(dlg.GetQuantity().ToStdString()));
+        inventory[inventoryIndex].setPartLocation(dlg.GetLocation().ToStdString());
+        wxLogMessage("Part edited: %s", inventory[inventoryIndex].getPartNumber());
+        UpdateTotalCost();
     }
 }
 
 void PartsManagerFrames::OnDeletePart(wxCommandEvent& event) {
     if (selectedPartIndex == -1) return;
-    wxLogMessage("Deleting part: %s", inventory[selectedPartIndex].getPartNumber());
+    long inventoryIndex = partList->GetItemData(selectedPartIndex); // Get inventory index
+    if (inventoryIndex < 0 || inventoryIndex >= static_cast<long>(inventory.size())) {
+        wxLogMessage("Invalid inventory index: %ld", inventoryIndex);
+        wxMessageBox("Cannot delete part: Invalid selection.", "Error", wxOK | wxICON_ERROR);
+        return;
+    }
+
+    wxLogMessage("Deleting part: %s", inventory[inventoryIndex].getPartNumber());
     partList->DeleteItem(selectedPartIndex);
-    inventory.erase(inventory.begin() + selectedPartIndex);
+    inventory.erase(inventory.begin() + inventoryIndex);
     selectedPartIndex = -1;
     editButton->Disable();
     deleteButton->Disable();
-    UpdateTotalCost(); // Update total cost after deleting
+    UpdateTotalCost();
 }
 
 void PartsManagerFrames::OnSaveChanges(wxCommandEvent& event) {
@@ -442,52 +463,59 @@ void PartsManagerFrames::OnClose(wxCloseEvent& event) {
 }
 
 void PartsManagerFrames::OnSearch(wxCommandEvent& event) {
-    wxTextEntryDialog searchDialog(this, "Enter part number or description to search:", "Search Part");
+    wxTextEntryDialog searchDialog(this, "Enter part number, description, or location to search:", "Search Part");
     if (searchDialog.ShowModal() == wxID_OK) {
         wxString searchQuery = searchDialog.GetValue().Lower();
         partList->DeleteAllItems();
+        selectedPartIndex = -1; // Reset selection
+        editButton->Disable();
+        deleteButton->Disable();
 
-        for (const auto& part : inventory) {
-            wxString partNumber = wxString(part.getPartNumber()).Lower();
-            wxString description = wxString(part.getPartDescription()).Lower();
-            wxString location = wxString(part.getPartLocation()).Lower();
+        for (size_t i = 0; i < inventory.size(); ++i) {
+            wxString partNumber = wxString(inventory[i].getPartNumber()).Lower();
+            wxString description = wxString(inventory[i].getPartDescription()).Lower();
+            wxString location = wxString(inventory[i].getPartLocation()).Lower();
 
             if (partNumber.Contains(searchQuery) || description.Contains(searchQuery) || location.Contains(searchQuery)) {
                 long index = partList->GetItemCount();
-                partList->InsertItem(index, part.getPartNumber());
-                partList->SetItem(index, 1, part.getPartDescription());
-                partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-                partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-                partList->SetItem(index, 4, part.getPartManufacturer());
-                partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-                partList->SetItem(index, 6, part.getPartLocation());
+                partList->InsertItem(index, inventory[i].getPartNumber());
+                partList->SetItem(index, 1, inventory[i].getPartDescription());
+                partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+                partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+                partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+                partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+                partList->SetItem(index, 6, inventory[i].getPartLocation());
+                partList->SetItemData(index, i); // Store inventory index
             }
         }
 
         if (partList->GetItemCount() == 0) {
             wxMessageBox("No parts found.", "Search Result", wxOK | wxICON_INFORMATION);
         }
-        UpdateTotalCost(); // Update total cost after search (optional, as list may be filtered)
+        UpdateTotalCost();
     }
 }
 
 void PartsManagerFrames::OnShowAll(wxCommandEvent& event) {
     partList->DeleteAllItems();
+    selectedPartIndex = -1; // Reset selection
+    editButton->Disable();
+    deleteButton->Disable();
 
-    for (const auto& part : inventory) {
+    for (size_t i = 0; i < inventory.size(); ++i) {
         long index = partList->GetItemCount();
-        partList->InsertItem(index, part.getPartNumber());
-        partList->SetItem(index, 1, part.getPartDescription());
-        partList->SetItem(index, 2, std::to_string(part.getPartCost()));
-        partList->SetItem(index, 3, std::to_string(part.getPartRetail()));
-        partList->SetItem(index, 4, part.getPartManufacturer());
-        partList->SetItem(index, 5, std::to_string(part.getPartQuantity()));
-        partList->SetItem(index, 6, part.getPartLocation());
+        partList->InsertItem(index, inventory[i].getPartNumber());
+        partList->SetItem(index, 1, inventory[i].getPartDescription());
+        partList->SetItem(index, 2, std::to_string(inventory[i].getPartCost()));
+        partList->SetItem(index, 3, std::to_string(inventory[i].getPartRetail()));
+        partList->SetItem(index, 4, inventory[i].getPartManufacturer());
+        partList->SetItem(index, 5, std::to_string(inventory[i].getPartQuantity()));
+        partList->SetItem(index, 6, inventory[i].getPartLocation());
+        partList->SetItemData(index, i);
     }
-    UpdateTotalCost(); // Update total cost after showing all
+    UpdateTotalCost();
 }
 
-// SortList not implemented; placeholder to avoid linker error
 void PartsManagerFrames::SortList(wxListEvent& event) {
     OnSortColumn(event);
 }
